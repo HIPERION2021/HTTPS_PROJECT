@@ -10,8 +10,8 @@ Before using HTTPS SERVER please make sure you installed:
 mysql-connector-python
 
 HTTPS SERVER requires a MySQL database containing the provided tables.
-If you are not used to SQL databases, please install lampp
-run:
+If you are not used to SQL databases, please install lampp.
+to start the MySQL server, Apache server, and FTP server please run:
 ```bash
 sudo /opt/lampp/lampp start
 ```
