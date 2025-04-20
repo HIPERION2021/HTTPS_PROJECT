@@ -66,9 +66,9 @@ If everything goes well you will see the received mesage in your "data" table in
 ## WHAT YOU SHOULD KNOW
 
 This is not a production implementation, and as such, some details are not fully implemented. We use salt values for the authentication scheme BUT the objective is to explore how they work.
-The salt implementation is NOT SECURE and should be modified if you want to use this program for any real-life purpose
+The salt implementation is NOT SECURE and should be modified if you want to use this program for any real-life purpose.
 
-The server side has databse configuration values hardcoded. This is NOT SECURE in real life. If you decide to use this code please create configuration files and isolate teh connection configurations from the rest of the code.
+The server side has database configuration values hardcoded. This is NOT SECURE in real life. If you decide to use this code, please create configuration files and isolate the connection configurations from the rest of the code.
 
 Our server expects certain fields to be transmited, if they are not present the message will be dump and saved in the received_messages folder.
 You DO NOT need to change anything in the code. If you want to add or remove the values the server expects to get you can simply add or remove columns in the "data" table.
