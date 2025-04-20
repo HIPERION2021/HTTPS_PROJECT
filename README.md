@@ -33,8 +33,11 @@ sudo /opt/lampp/lampp stop
 
 Please note that this repo contains SSL certificates that wont work for your netwok. they are in place so you know where to put your own certificates
 Please create new SSL certificates, if you are not familiar with the process you can run:
+
+```bash
 openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
-and put the ip address of your server computer in the CM (common name) value.
+```
+write the ip address of your server computer in the CM (common name) value.
 This is deprated and can be used only for testing. If you want to make thing right use a SAN file and add the ip as an alias.
 
 ## HOW TO USE HTTP SERVER
