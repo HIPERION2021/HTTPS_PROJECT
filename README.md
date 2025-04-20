@@ -11,7 +11,10 @@ mysql-connector-python
 
 HTTPS SERVER requires a MySQL database containing the provided tables.
 If you are not used to SQL databases, please install lampp
-run sudo /opt/lampp start
+run:
+```bash
+sudo /opt/lampp start
+```
 open the web browser and navigate to localhost (127.0.0.1)
 select MyPHPAdmin
 create a new database called "project_CSS"
@@ -21,8 +24,9 @@ select the project_CSS.sql file provided in the server folder.
 the lampp SQL server MUST be ACTIVE to use HTTPS SERVER.
 
 To deactivate the SQL server please go to your terminal and write
+```bash
 sudo /opt/lampp/lampp stop
-
+```
 
 ## Notes
 
