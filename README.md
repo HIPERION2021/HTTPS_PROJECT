@@ -83,7 +83,10 @@ python3 https_client.py --server [server address:port] [json data]
 [json data] = '{"FirstName":"somedata", "LastName":"some data", "Age":int, "Hight":float, "Address":"some data", "Comment":"some data"}'
 
 Use example:
+
+```bash
 https://192.168.14.1:5000 '{"FirstName":"Pedro", "LastName":"Pascal", "Age":56, "Hight":1.78, "Address":"1578 Rainbow St. Apt 105", "Comment":"We are just testing this sever"}'
+```
 
 ## CONTACT US
 
