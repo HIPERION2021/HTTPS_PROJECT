@@ -13,7 +13,7 @@ HTTPS SERVER requires a MySQL database containing the provided tables.
 If you are not used to SQL databases, please install lampp
 run:
 ```bash
-sudo /opt/lampp start
+sudo /opt/lampp/lampp start
 ```
 open the web browser and navigate to localhost (127.0.0.1)
 select MyPHPAdmin
