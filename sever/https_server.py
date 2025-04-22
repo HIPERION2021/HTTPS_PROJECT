@@ -9,23 +9,24 @@ from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.exceptions import InvalidSignature
-from flask import Flask, request, jsonify, send_file
-from werkzeug.utils import secure_filename
+from flask import Flask, request, jsonify
+import uuid
 import mysql.connector
 from tools import load_public_key, generate_key_pair, generate_token, hash_token
-from datetime import date
+from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 
 app = Flask(__name__)
 
 # Directory for storing malformed messages (kind of a log to avoid losing data if something fails)
 UPLOAD_FOLDER = 'received_messages'
+KEY_FOLDER = 'keys'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(KEY_FOLDER, exist_ok=True)
 
 # Server ECDH key
 server_private_key, server_public_key = generate_key_pair()
 
-verify_key = load_public_key("public_key.pem")
 client_sessions = {}
 
 @app.route('/api/key_exchange', methods=['POST'])
@@ -76,7 +77,6 @@ def upload_data():
             return jsonify({'error': 'Invalid or missing client ID'}), 401
         #check if the clinet id exists and have a token to validate access
         try:
-            #connection configurations is hard coded for now, is best to make configuration files. for this prototype we are mre interested in encryption and authentication...
             conn = mysql.connector.connect(user='root', password='',
                     host='127.0.0.1',
                     database='project_CSS',
@@ -154,6 +154,7 @@ def upload_data():
         
         # Verify signature 
         if signature:
+            verify_key = load_public_key( KEY_FOLDER + "/" + client_id + "_public_key.pem")
             try:
                 verify_key.verify(signature, plaintext, ec.ECDSA(hashes.SHA256()))
             except InvalidSignature:
@@ -162,6 +163,7 @@ def upload_data():
         # Process the decrypted data
         try:
             data = json.loads(plaintext)
+                                            
             try:
                 link = mysql.connector.connect(user='root', password='',
                         host='127.0.0.1',
@@ -170,16 +172,18 @@ def upload_data():
                 cursor = link.cursor(dictionary=True)
 
             except mysql.connector.Error as e:
-                filename = f'data_{int(time.time())}.bin'
+                filename = f'data_{uuid.uuid4().hex}.txt'
                 filepath = os.path.join(UPLOAD_FOLDER, filename)
-                with open(filepath, 'wb') as f:
-                    f.write(plaintext)
+                with open(filepath, 'w') as f:
+                    f.write("Message received: " + str(datetime.now()) + "\nSender: " + client_id +"\n Message = "+ str(plaintext))
+                    f.close()
                 #I had these as json in the beggining but the client side is showing the entire thing.. so it looks ugly but it works
-                return jsonify('Something went wrong, please contact the network administrator'), 401  
+                return jsonify('Something went wrong, please contact the network administrator'), 400  
 
             #some columns have no default value and are NEEDED for teh insert to work, this is in purpose...
             try:
-                columns = [x for x in data.keys() if x !='type']
+                data['user'] = client_id
+                columns = [x for x in data.keys()]
                 query = f"INSERT INTO data ({', '.join(columns)}) VALUES ({', '.join(['%s'] * len(columns))})"
                 cursor.execute(query, [data[column] for column in columns])
                 link.commit()
@@ -193,20 +197,21 @@ def upload_data():
                     'message': f'Data saved'
                 })
             except Exception as e:
-                filename = f'data_{int(time.time())}.bin'
+                filename = f'data_{uuid.uuid4().hex}.txt'
                 filepath = os.path.join(UPLOAD_FOLDER, filename)
-                with open(filepath, 'wb') as f:
-                    f.write(plaintext)
-                
-                return jsonify('Malformed data... please try again...'), 401
+                with open(filepath, 'w') as f:
+                    f.write("Message received: " + str(datetime.now()) + "\nSender: " + client_id +"\n Message = "+ str(plaintext))
+                    f.close()
+
+                return jsonify('Malformed data... please try again...'), 400
                 
         except json.JSONDecodeError:
             # Handle non-JSON data
-            filename = f'data_{int(time.time())}.bin'
+            filename = f'data_{uuid.uuid4().hex}.txt'
             filepath = os.path.join(UPLOAD_FOLDER, filename)
-            with open(filepath, 'wb') as f:
-                f.write(plaintext)
-            
+            with open(filepath, 'w') as f:
+                f.write("Message received: " + str(datetime.now()) + "\nSender: " + client_id +"\n Message = "+ str(plaintext))
+                f.close()
             return jsonify({
                 'status': 'success',
                 'message': f'Raw data saved as {filename}',
