@@ -63,7 +63,7 @@ You can use the keys we provided. If you lose them or need to replace them you c
 ```bash
 python3 tools.py
 ```
-In any one of the machines and a new pair of keys will be generated. Please place the proved key in the client and the public key in the server.
+In the client machines and a new pair of keys will be generated. Please place the proved key in the client and the public key in the server.
 If theres any error in the transmission your client machine will let you know. 
 Messages that fail to be saved (for any reason) will be decrypted and saved as .bin files in the folder "received_messages"
 If you dont see teh folder dont worry, our program will create it for you when needed.
