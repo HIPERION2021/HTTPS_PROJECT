@@ -10,23 +10,9 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-from tools import load_private_key
+from tools import load_private_key, load_or_create_client_id, load_token
 
-def load_or_create_client_id(path='client_id.json'):
-    if os.path.exists(path):
-        with open(path, 'r') as f:
-            return json.load(f)['client_id']
-    else:
-        client_id = str(uuid.uuid4())
-        with open(path, 'w') as f:
-            json.dump({'client_id': client_id}, f)
-        return client_id
-def load_token(path):
-    if os.path.exists(path):
-        with open(path, 'r') as f:
-            return json.load(f)['token']
-    else:
-        return ''
+
 
 class SecureHTTPSClient:
     def __init__(self, server_url, verify_ssl=True, signing_key_path="private_key.pem", ca_cert_path=None):
@@ -42,6 +28,7 @@ class SecureHTTPSClient:
         # Generate client ID
         self.client_id = load_or_create_client_id()
         self.token = load_token(str(self.client_id) + '.json')
+        
         
         # Generate ECDH key pair
         self.ecdh_private_key = ec.generate_private_key(ec.SECP256R1())
